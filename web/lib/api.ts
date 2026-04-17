@@ -32,9 +32,9 @@ class ApiClient {
         const status = error.response?.status;
         const message = error.response?.data?.message || error.message;
 
-        if (status === 401) {
+        if (status === 401 || status === 403) {
           removeToken();
-          if (typeof window !== "undefined") {
+          if (typeof window !== "undefined" && window.location.pathname !== "/login") {
             window.location.href = "/login";
           }
         }

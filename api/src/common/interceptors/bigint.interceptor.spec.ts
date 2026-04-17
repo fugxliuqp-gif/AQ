@@ -49,6 +49,15 @@ describe('BigIntInterceptor', () => {
     expect(result.c).toBe('1');
   });
 
+  it('should convert Date to ISO string', async () => {
+    const date = new Date('2026-01-15T08:00:00.000Z');
+    const result = await lastValueFrom(
+      interceptor.intercept({} as any, mockHandler({ createdAt: date, id: 1n })),
+    );
+    expect(result.createdAt).toBe('2026-01-15T08:00:00.000Z');
+    expect(result.id).toBe('1');
+  });
+
   it('should handle plain non-object values', async () => {
     expect(await lastValueFrom(interceptor.intercept({} as any, mockHandler('hello')))).toBe(
       'hello',

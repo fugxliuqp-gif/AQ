@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 function convertBigInts(obj: any): any {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'bigint') return obj.toString();
+  if (obj instanceof Date) return obj.toISOString();
   if (Array.isArray(obj)) return obj.map(convertBigInts);
   if (typeof obj === 'object') {
     const result: any = {};
