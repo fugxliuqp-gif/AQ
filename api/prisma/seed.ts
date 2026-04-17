@@ -27,9 +27,10 @@ async function main() {
     where: { username: 'superadmin', role: 'super_admin' },
   });
 
+  let superAdminId: bigint;
   if (!adminExists) {
     const passwordHash = await bcrypt.hash('admin123', 10);
-    await prisma.user.create({
+    const superAdmin = await prisma.user.create({
       data: {
         username: 'superadmin',
         passwordHash,
@@ -38,10 +39,70 @@ async function main() {
         status: 'active',
       },
     });
+    superAdminId = superAdmin.id;
     console.log('✅ Super admin created: superadmin / admin123');
   } else {
+    superAdminId = adminExists.id;
     console.log('⚠️ Super admin already exists');
   }
+
+  // 3. Create test tenant and default tenant admin (for E2E testing)
+  let tenant = await prisma.tenant.findUnique({
+    where: { tenantCode: 'testcorp' },
+  });
+
+  if (!tenant) {
+    tenant = await prisma.tenant.create({
+      data: {
+        tenantCode: 'testcorp',
+        tenantName: '测试企业',
+        subscriptionPlan: 'professional',
+        expireDate: new Date('2027-12-31T23:59:59.000Z'),
+        maxUsers: 50,
+        createdBy: superAdminId,
+      },
+    });
+    console.log('✅ Test tenant created: testcorp');
+  } else {
+    console.log('⚠️ Test tenant already exists');
+  }
+
+  const tenantAdminExists = await prisma.user.findFirst({
+    where: { username: 'tenantadmin', role: 'tenant_admin', tenantId: tenant.id },
+  });
+
+  if (!tenantAdminExists) {
+    const passwordHash = await bcrypt.hash('tenant123', 10);
+    await prisma.user.create({
+      data: {
+        tenantId: tenant.id,
+        username: 'tenantadmin',
+        passwordHash,
+        realName: '企业管理员',
+        role: 'tenant_admin',
+        status: 'active',
+        createdBy: superAdminId,
+      },
+    });
+    console.log('✅ Tenant admin created: tenantadmin / tenant123');
+  } else {
+    console.log('⚠️ Tenant admin already exists');
+  }
+
+  // 4. Grant module licenses to test tenant
+  const licensedModules = ['ehs', 'equipment', 'ai_chat'];
+  for (const code of licensedModules) {
+    await prisma.tenantModuleLicense.upsert({
+      where: { tenantId_moduleCode: { tenantId: tenant.id, moduleCode: code } },
+      update: { status: 'active' },
+      create: {
+        tenantId: tenant.id,
+        moduleCode: code,
+        status: 'active',
+      },
+    });
+  }
+  console.log('✅ Module licenses granted to test tenant');
 }
 
 main()

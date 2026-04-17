@@ -51,6 +51,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/postgres?schema=public
 
+      - name: Seed database
+        run: cd api && npx ts-node prisma/seed.ts
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/postgres?schema=public
+
       - name: Build API
         run: cd api && npm run build
 
