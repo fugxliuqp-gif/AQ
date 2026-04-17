@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: {
     command: 'npx next dev -p 3450',
     url: 'http://localhost:3450',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
     env: {
       NEXT_PUBLIC_API_URL: 'http://localhost:3451',

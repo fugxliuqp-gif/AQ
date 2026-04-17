@@ -80,8 +80,17 @@ jobs:
       - name: Install Playwright Browsers
         run: cd web && npx playwright install --with-deps chromium
 
+      - name: Start Web dev server in background
+        run: |
+          cd web
+          npx next dev -p 3450 > /tmp/web.log 2>&1 &
+          for i in {1..60}; do
+            curl -s http://localhost:3450/login > /dev/null && break
+            sleep 2
+          done
+
       - name: Run Web E2E tests
-        run: cd web && npx playwright test
+        run: cd web && npx playwright test --workers=1
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3451
 
