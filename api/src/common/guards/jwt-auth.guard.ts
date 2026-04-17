@@ -20,7 +20,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+    const req = context.switchToHttp().getRequest();
+    console.log('[JWT GUARD]', req.url, 'auth:', req.headers.authorization?.substring(0, 50), 'err:', err?.message, 'info:', info?.message, 'user:', !!user);
     if (err || !user) {
       throw err || new UnauthorizedException('未登录或token已过期');
     }

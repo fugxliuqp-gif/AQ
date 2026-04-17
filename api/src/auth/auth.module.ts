@@ -8,10 +8,14 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production',
-      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any },
-    }),
+    (() => {
+      const secret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+      console.log('[JWT MODULE] secret length:', secret.length, 'secret prefix:', secret.substring(0, 10));
+      return JwtModule.register({
+        secret,
+        signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any },
+      });
+    })(),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
