@@ -1,0 +1,88 @@
+name: Web E2E CI
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'web/**'
+      - 'api/**'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'web/**'
+      - 'api/**'
+      - '.github/workflows/web-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install API dependencies
+        run: cd api && npm ci
+
+      - name: Apply Prisma migrations
+        run: cd api && npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/postgres?schema=public
+
+      - name: Build API
+        run: cd api && npm run build
+
+      - name: Start API in background
+        run: |
+          cd api
+          cat > .env <<EOF
+          PORT=3451
+          DATABASE_URL="postgresql://postgres:postgres@localhost:5433/postgres?schema=public"
+          JWT_SECRET="ci-test-secret-key"
+          JWT_EXPIRES_IN="1h"
+          EOF
+          npm run start:prod > /tmp/api.log 2>&1 &
+          for i in {1..30}; do
+            curl -s http://localhost:3451/auth/login > /dev/null && break
+            sleep 1
+          done
+
+      - name: Install Web dependencies
+        run: cd web && npm ci
+
+      - name: Install Playwright Browsers
+        run: cd web && npx playwright install --with-deps chromium
+
+      - name: Run Web E2E tests
+        run: cd web && npx playwright test
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3451
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 7
