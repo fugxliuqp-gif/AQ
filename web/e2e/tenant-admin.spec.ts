@@ -3,6 +3,22 @@ import { test, expect } from '@playwright/test';
 test.use({ storageState: 'playwright/.auth/tenantadmin.json' });
 
 test.describe('Tenant Admin', () => {
+  test.beforeEach(async ({ page }) => {
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        console.error(`[BROWSER ERROR] ${msg.text()}`);
+      } else {
+        console.log(`[BROWSER CONSOLE] ${msg.type()}: ${msg.text()}`);
+      }
+    });
+    page.on('pageerror', err => console.error(`[PAGE ERROR] ${err.message}`));
+    page.on('response', async res => {
+      if (res.url().includes(':3451/')) {
+        console.log(`[API RESPONSE] ${res.status()} ${res.request().method()} ${res.url()}`);
+      }
+    });
+  });
+
   test('should display tenant dashboard', async ({ page }) => {
     await page.goto('/admin/tenant/dashboard');
     await page.waitForLoadState('networkidle');
