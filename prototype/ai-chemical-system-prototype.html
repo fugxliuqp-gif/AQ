@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI化工信息化系统 - 交互原型</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .view { display: none; }
+    .view.active { display: block; }
+    .chat-bubble { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .pulse-ring { animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2); opacity: 0; } }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- 顶部视图切换器 -->
+  <div class="fixed top-0 left-0 right-0 z-50 bg-slate-900 text-white px-4 py-2 flex items-center justify-between shadow">
+    <div class="font-bold text-sm"><i class="fa-solid fa-flask text-cyan-400 mr-2"></i>AI化工系统原型</div>
+    <div class="flex space-x-2 text-xs">
+      <button onclick="switchView('v1')" class="px-3 py-1 rounded hover:bg-slate-700 transition bg-slate-700" id="btn-v1">智能工作台</button>
+      <button onclick="switchView('v2')" class="px-3 py-1 rounded hover:bg-slate-700 transition" id="btn-v2">对话台</button>
+      <button onclick="switchView('v3')" class="px-3 py-1 rounded hover:bg-slate-700 transition" id="btn-v3">传统+AI边栏</button>
+      <button onclick="switchView('v4')" class="px-3 py-1 rounded hover:bg-slate-700 transition" id="btn-v4">移动端语音</button>
+    </div>
+  </div>
+
+  <div class="pt-12">
+
+    <!-- ==================== 视图1：智能工作台首页 ==================== -->
+    <div id="v1" class="view active min-h-screen">
+      <div class="flex h-screen">
+        <!-- 左侧导航（保留但精简） -->
+        <div class="w-16 bg-slate-900 text-gray-300 flex flex-col items-center py-4 space-y-6">
+          <div class="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center text-white font-bold">AI</div>
+          <div class="text-cyan-400 text-xl"><i class="fa-solid fa-house"></i></div>
+          <div class="hover:text-white cursor-pointer text-xl"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="hover:text-white cursor-pointer text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="hover:text-white cursor-pointer text-xl"><i class="fa-solid fa-gears"></i></div>
+          <div class="hover:text-white cursor-pointer text-xl"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="mt-auto hover:text-white cursor-pointer text-xl"><i class="fa-solid fa-user"></i></div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col bg-gray-50">
+          <!-- 顶部搜索栏 -->
+          <div class="bg-white border-b px-8 py-4">
+            <div class="max-w-3xl mx-auto relative">
+              <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fa-solid fa-magnifying-glass"></i></div>
+              <input type="text" placeholder="试试说：昨天三车间R-101温度趋势 / 帮我创建动火作业票 / 本周到期特种作业证"
+                class="w-full pl-11 pr-4 py-3 bg-gray-100 rounded-xl border-0 focus:ring-2 focus:ring-cyan-500 text-sm">
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border px-2 py-1 rounded">Ctrl K</div>
+            </div>
+          </div>
+
+          <!-- 智能卡片流 -->
+          <div class="flex-1 overflow-auto p-8">
+            <div class="max-w-4xl mx-auto space-y-4">
+              <h2 class="text-lg font-semibold text-gray-700 mb-4">上午好，张工。今日为您关注：</h2>
+
+              <!-- 卡片1：待办聚合 -->
+              <div class="bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fa-solid fa-list-check"></i></div>
+                    <div>
+                      <div class="font-semibold">今日待巡检任务 3 项</div>
+                      <div class="text-sm text-gray-500">R-101反应釜、P-203循环泵、T-501储罐</div>
+                    </div>
+                  </div>
+                  <button class="text-cyan-600 text-sm font-medium">一键开始巡检 →</button>
+                </div>
+                <div class="mt-3 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded">
+                  <i class="fa-solid fa-circle-exclamation mr-1"></i>AI 提醒：R-101 昨晚温度异常波动 23 分钟，建议重点关注轴承温度测点。
+                </div>
+              </div>
+
+              <!-- 卡片2：异常预警 -->
+              <div class="bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div>
+                      <div class="font-semibold">DCS 异常报警：三车间蒸汽压力低</div>
+                      <div class="text-sm text-gray-500">发生时间：06:42 | 持续时间：8分钟 | 已自动关联锅炉工段</div>
+                    </div>
+                  </div>
+                  <button class="text-cyan-600 text-sm font-medium">查看处置建议 →</button>
+                </div>
+                <div class="mt-3 flex space-x-2">
+                  <span class="text-xs bg-gray-100 px-2 py-1 rounded">历史同类异常：2次</span>
+                  <span class="text-xs bg-gray-100 px-2 py-1 rounded">关联SOP：锅炉蒸汽调节规程-03</span>
+                </div>
+              </div>
+
+              <!-- 卡片3：知识/报表 -->
+              <div class="bg-white rounded-xl shadow-sm border p-5 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-file-lines"></i></div>
+                    <div>
+                      <div class="font-semibold">本月能耗简报已生成</div>
+                      <div class="text-sm text-gray-500">同比 +8.3%，主要增量来自锅炉工段</div>
+                    </div>
+                  </div>
+                  <button class="text-cyan-600 text-sm font-medium">查看详情 →</button>
+                </div>
+                <div class="mt-3 text-sm text-gray-600">
+                  <span class="font-medium">AI 结论：</span>建议本周内排查锅炉燃烧器空燃比调节曲线，历史数据显示该问题可导致能耗上升 5~12%。
+                </div>
+              </div>
+
+              <!-- 快捷入口 -->
+              <div class="grid grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl border p-4 text-center hover:border-cyan-500 cursor-pointer transition">
+                  <div class="text-2xl text-cyan-600 mb-2"><i class="fa-solid fa-microphone"></i></div>
+                  <div class="text-sm font-medium">语音报隐患</div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 text-center hover:border-cyan-500 cursor-pointer transition">
+                  <div class="text-2xl text-cyan-600 mb-2"><i class="fa-solid fa-ticket"></i></div>
+                  <div class="text-sm font-medium">开作业票</div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 text-center hover:border-cyan-500 cursor-pointer transition">
+                  <div class="text-2xl text-cyan-600 mb-2"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                  <div class="text-sm font-medium">查设备台账</div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 text-center hover:border-cyan-500 cursor-pointer transition">
+                  <div class="text-2xl text-cyan-600 mb-2"><i class="fa-solid fa-file-export"></i></div>
+                  <div class="text-sm font-medium">生成交接班</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 视图2：统一对话台 ==================== -->
+    <div id="v2" class="view min-h-screen bg-gray-50 p-8">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg border overflow-hidden min-h-[80vh] flex flex-col">
+          <!-- 对话头部 -->
+          <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center"><i class="fa-solid fa-robot"></i></div>
+              <div>
+                <div class="font-semibold">AI 化工助手</div>
+                <div class="text-xs text-gray-300">已接入 EHS / MES / 设备管理 / DCS</div>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400">对话记录自动保存</div>
+          </div>
+
+          <!-- 对话内容 -->
+          <div class="flex-1 p-6 space-y-4 overflow-auto bg-gray-50">
+            <!-- AI 欢迎 -->
+            <div class="chat-bubble flex items-start space-x-3">
+              <div class="w-8 h-8 bg-cyan-100 text-cyan-700 rounded-full flex items-center justify-center text-sm flex-shrink-0"><i class="fa-solid fa-robot"></i></div>
+              <div class="bg-white border rounded-xl rounded-tl-none px-4 py-3 max-w-[80%] shadow-sm">
+                <div class="text-sm">您好，我是您的化工智能助手。您可以问我数据、让我帮您创建单据，或总结报告。试试说：</div>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <span class="text-xs bg-cyan-50 text-cyan-700 px-2 py-1 rounded cursor-pointer hover:bg-cyan-100">"R-101本周温度趋势"</span>
+                  <span class="text-xs bg-cyan-50 text-cyan-700 px-2 py-1 rounded cursor-pointer hover:bg-cyan-100">"帮我查张三的特种作业证"</span>
+                  <span class="text-xs bg-cyan-50 text-cyan-700 px-2 py-1 rounded cursor-pointer hover:bg-cyan-100">"生成一份动火作业票"</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 用户输入 -->
+            <div class="chat-bubble flex items-start justify-end space-x-3">
+              <div class="bg-cyan-600 text-white rounded-xl rounded-tr-none px-4 py-3 max-w-[80%] shadow-sm text-sm">
+                R-101 本周温度趋势怎么样？
+              </div>
+            </div>
+
+            <!-- AI 回复（带数据卡片） -->
+            <div class="chat-bubble flex items-start space-x-3">
+              <div class="w-8 h-8 bg-cyan-100 text-cyan-700 rounded-full flex items-center justify-center text-sm flex-shrink-0"><i class="fa-solid fa-robot"></i></div>
+              <div class="max-w-[85%] space-y-2">
+                <div class="bg-white border rounded-xl rounded-tl-none px-4 py-3 shadow-sm text-sm">
+                  R-101（反应釜）本周运行平稳，平均温度 158.3°C，波动范围 ±2.1°C。但 <span class="text-orange-600 font-medium">4月15日 02:15~02:38</span> 出现异常低温（最低 142°C），持续 23 分钟，已自动关联当班操作记录。
+                </div>
+                <!-- 内嵌图表卡片 -->
+                <div class="bg-white border rounded-xl p-4 shadow-sm">
+                  <div class="text-xs text-gray-500 mb-2">R-101 本周温度曲线（°C）</div>
+                  <div class="h-24 flex items-end space-x-1">
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:60%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:65%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:62%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:70%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:68%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:64%"></div>
+                    <div class="flex-1 bg-orange-400 rounded-t" style="height:35%"></div>
+                    <div class="flex-1 bg-cyan-200 rounded-t" style="height:66%"></div>
+                  </div>
+                  <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                    <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span class="text-orange-600 font-medium">周日↓</span><span>今天</span>
+                  </div>
+                  <div class="mt-3 flex space-x-2">
+                    <button class="text-xs bg-cyan-50 text-cyan-700 px-3 py-1 rounded hover:bg-cyan-100">查看详细报表</button>
+                    <button class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200">导出 Excel</button>
+                    <button class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200">生成异常分析</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 输入框 -->
+          <div class="border-t bg-white p-4">
+            <div class="flex items-center space-x-3">
+              <button class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"><i class="fa-solid fa-paperclip"></i></button>
+              <input type="text" placeholder="输入问题或指令..." class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <button class="w-10 h-10 rounded-full bg-cyan-600 hover:bg-cyan-700 flex items-center justify-center text-white"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+            <div class="text-center text-[10px] text-gray-400 mt-2">AI 生成内容仅供参考，关键操作请以系统确认为准</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 视图3：传统页面 + 侧边AI协作者 ==================== -->
+    <div id="v3" class="view min-h-screen">
+      <div class="flex h-screen">
+        <!-- 传统左侧导航 -->
+        <div class="w-56 bg-slate-900 text-gray-300 flex flex-col">
+          <div class="p-4 font-bold text-white border-b border-slate-700">EHS管理系统</div>
+          <div class="flex-1 overflow-auto py-2">
+            <div class="px-4 py-2 text-xs text-gray-500 uppercase">设备管理</div>
+            <div class="px-6 py-2 bg-slate-800 text-white border-l-4 border-cyan-500">设备台账</div>
+            <div class="px-6 py-2 hover:bg-slate-800 cursor-pointer">检维修管理</div>
+            <div class="px-6 py-2 hover:bg-slate-800 cursor-pointer">特种设备</div>
+            <div class="px-4 py-2 text-xs text-gray-500 uppercase mt-2">安全管理</div>
+            <div class="px-6 py-2 hover:bg-slate-800 cursor-pointer">隐患排查</div>
+            <div class="px-6 py-2 hover:bg-slate-800 cursor-pointer">作业票管理</div>
+            <div class="px-6 py-2 hover:bg-slate-800 cursor-pointer">变更管理</div>
+          </div>
+        </div>
+
+        <!-- 传统主内容 -->
+        <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+          <!-- 传统顶部栏 -->
+          <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
+            <div class="text-lg font-semibold">设备台账</div>
+            <div class="flex items-center space-x-2">
+              <input type="text" placeholder="搜索设备编号/名称" class="border rounded px-3 py-1 text-sm">
+              <button class="bg-cyan-600 text-white px-3 py-1 rounded text-sm">+ 新增设备</button>
+            </div>
+          </div>
+
+          <!-- 传统表格 -->
+          <div class="flex-1 p-4 overflow-auto">
+            <div class="bg-white border rounded-lg overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-100 text-gray-600">
+                  <tr>
+                    <th class="px-4 py-2 text-left">设备编号</th>
+                    <th class="px-4 py-2 text-left">设备名称</th>
+                    <th class="px-4 py-2 text-left">所在车间</th>
+                    <th class="px-4 py-2 text-left">运行状态</th>
+                    <th class="px-4 py-2 text-left">下次检验日期</th>
+                    <th class="px-4 py-2 text-left">操作</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y">
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium">R-101</td>
+                    <td class="px-4 py-3">加氢反应釜</td>
+                    <td class="px-4 py-3">三车间</td>
+                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">运行中</span></td>
+                    <td class="px-4 py-3">2025-08-15</td>
+                    <td class="px-4 py-3 text-cyan-600 cursor-pointer">详情</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium">P-203</td>
+                    <td class="px-4 py-3">循环泵</td>
+                    <td class="px-4 py-3">三车间</td>
+                    <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs">待检修</span></td>
+                    <td class="px-4 py-3 text-red-600 font-medium">2025-04-20（剩3天）</td>
+                    <td class="px-4 py-3 text-cyan-600 cursor-pointer">详情</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium">T-501</td>
+                    <td class="px-4 py-3">甲醇储罐</td>
+                    <td class="px-4 py-3">储运车间</td>
+                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">运行中</span></td>
+                    <td class="px-4 py-3">2025-06-10</td>
+                    <td class="px-4 py-3 text-cyan-600 cursor-pointer">详情</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧AI协作者（Sidecar） -->
+        <div class="w-80 bg-white border-l flex flex-col shadow-xl">
+          <div class="px-4 py-3 border-b flex items-center justify-between bg-gray-50">
+            <div class="font-semibold text-sm flex items-center"><i class="fa-solid fa-robot text-cyan-600 mr-2"></i>AI 助手</div>
+            <div class="text-xs text-gray-400">当前页面：设备台账</div>
+          </div>
+          <div class="flex-1 overflow-auto p-4 space-y-3 text-sm">
+            <div class="bg-cyan-50 border border-cyan-100 rounded-lg p-3">
+              <div class="font-medium text-cyan-800 mb-1"><i class="fa-solid fa-lightbulb mr-1"></i>页面洞察</div>
+              <div class="text-cyan-700 text-xs leading-relaxed">
+                本页共 <strong>312</strong> 台设备，其中 <strong>2 台</strong> 处于异常/待检修状态。P-203 循环泵距下次检验仅剩 <strong>3 天</strong>，建议尽快安排定检计划。
+              </div>
+            </div>
+
+            <div class="border rounded-lg p-3">
+              <div class="font-medium text-gray-700 mb-2">快捷操作</div>
+              <div class="space-y-2">
+                <button class="w-full text-left text-xs bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded">🔍 找出本月到期的特种设备</button>
+                <button class="w-full text-left text-xs bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded">📊 生成三车间设备完好率报表</button>
+                <button class="w-full text-left text-xs bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded">⚠️ 查看R-101历史异常记录</button>
+              </div>
+            </div>
+
+            <div class="border rounded-lg p-3">
+              <div class="font-medium text-gray-700 mb-2">对话</div>
+              <div class="space-y-2 text-xs">
+                <div class="bg-gray-100 rounded-lg px-3 py-2">帮我筛选出运行超过10年的压力容器</div>
+                <div class="bg-cyan-50 rounded-lg px-3 py-2 border border-cyan-100">已为您筛选出 <strong>17 台</strong> 运行超过10年的压力容器。 oldest 的一台是 R-008（2008年投用），建议重点关注其腐蚀检测数据。</div>
+              </div>
+            </div>
+          </div>
+          <div class="border-t p-3">
+            <div class="flex items-center space-x-2">
+              <input type="text" placeholder="问AI..." class="flex-1 border rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-cyan-500">
+              <button class="w-8 h-8 bg-cyan-600 text-white rounded-lg flex items-center justify-center"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 视图4：移动端语音报隐患 ==================== -->
+    <div id="v4" class="view min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div class="w-[375px] h-[812px] bg-white rounded-[40px] shadow-2xl overflow-hidden relative border-8 border-gray-800">
+        <!-- 手机状态栏 -->
+        <div class="h-12 bg-cyan-600 flex items-center justify-between px-6 text-white text-xs">
+          <span>9:41</span>
+          <div class="flex space-x-1">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-wifi"></i>
+            <i class="fa-solid fa-battery-full"></i>
+          </div>
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="flex flex-col h-[calc(100%-3rem)] bg-gray-50">
+          <!-- 顶部 -->
+          <div class="bg-cyan-600 text-white px-5 py-4">
+            <div class="text-lg font-bold">语音报隐患</div>
+            <div class="text-xs opacity-90">三车间 · 操作工 · 张工</div>
+          </div>
+
+          <!-- 语音交互区 -->
+          <div class="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
+            <div class="text-center space-y-2">
+              <div class="text-gray-500 text-sm">按住下方按钮，描述发现的隐患</div>
+              <div class="text-xs text-gray-400">例如："三号泵轴承有异常声响，温度偏高"</div>
+            </div>
+
+            <!-- 大语音按钮 -->
+            <div class="relative">
+              <div class="absolute inset-0 rounded-full bg-cyan-400 pulse-ring"></div>
+              <div class="absolute inset-0 rounded-full bg-cyan-400 pulse-ring" style="animation-delay: 1s"></div>
+              <button class="relative w-28 h-28 rounded-full bg-cyan-600 text-white shadow-xl flex items-center justify-center text-4xl active:scale-95 transition">
+                <i class="fa-solid fa-microphone"></i>
+              </button>
+            </div>
+
+            <!-- 识别中提示 -->
+            <div class="text-cyan-700 text-sm font-medium animate-pulse">正在聆听...</div>
+          </div>
+
+          <!-- 识别结果卡片（模拟识别完成后的状态） -->
+          <div class="bg-white border-t rounded-t-3xl p-5 space-y-3 shadow-lg">
+            <div class="flex items-center space-x-2 text-sm text-gray-700">
+              <i class="fa-solid fa-wave-square text-cyan-600"></i>
+              <span class="font-medium">识别结果</span>
+            </div>
+            <div class="text-sm text-gray-800 bg-gray-100 p-3 rounded-lg">
+              "三号泵轴承有异响，外壳温度大概六十多度，比以前高。"
+            </div>
+            <div class="border-t pt-3 space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">关联设备</span>
+                <span class="font-medium text-cyan-700">P-203 循环泵（三车间）</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">风险等级</span>
+                <span class="font-medium text-orange-600">一般隐患</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">推荐措施</span>
+                <span class="text-right text-gray-700 max-w-[60%]">停机检查轴承润滑及对中情况</span>
+              </div>
+            </div>
+            <div class="flex space-x-3 pt-2">
+              <button class="flex-1 bg-cyan-600 text-white py-2.5 rounded-xl font-medium text-sm">确认上报</button>
+              <button class="flex-1 bg-white border text-gray-700 py-2.5 rounded-xl font-medium text-sm">重新描述</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchView(id) {
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('bg-slate-700'));
+      document.getElementById('btn-' + id).classList.add('bg-slate-700');
+    }
+  </script>
+</body>
+</html>

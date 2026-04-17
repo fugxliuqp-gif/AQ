@@ -1,0 +1,36 @@
+stages:
+  - test
+
+variables:
+  NODE_VERSION: "22"
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
+  JWT_SECRET: "ci-test-secret-key"
+  JWT_EXPIRES_IN: "1h"
+
+test:api:
+  stage: test
+  image: node:22
+  services:
+    - postgres:16-alpine
+  before_script:
+    - cd api
+    - npm ci
+    - |
+      cat > .env.test <<EOF
+      DATABASE_URL="postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
+      JWT_SECRET="ci-test-secret-key"
+      JWT_EXPIRES_IN="1h"
+      EOF
+    - npx prisma migrate deploy
+  script:
+    - npm run build
+    - npm run test:cov -- --runInBand
+    - npm run test:e2e -- --runInBand
+  coverage: '/All files\s+\|\s+([\d.]+)/'
+  artifacts:
+    paths:
+      - api/coverage/
+    expire_in: 1 week
