@@ -18,8 +18,6 @@ class ApiClient {
     this.client.interceptors.request.use(
       (config) => {
         const token = getToken();
-        // eslint-disable-next-line no-console
-        console.log('[API REQUEST]', config.method?.toUpperCase(), config.url, 'token?', !!token);
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }

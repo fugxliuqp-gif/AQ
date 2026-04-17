@@ -89,11 +89,6 @@ jobs:
             sleep 2
           done
 
-      - name: Verify auth files
-        run: |
-          ls -la web/playwright/.auth/ || true
-          cat web/playwright/.auth/superadmin.json || true
-
       - name: Run Web E2E tests
         run: cd web && npx playwright test --workers=1
         env:
